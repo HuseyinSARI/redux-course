@@ -11,7 +11,7 @@ function TodoList() {
         <ul className="todo-list">
             {items.map((item) => {
                 return (
-                    <li key={item.id} className={item.isCompleted ? "" : "completed"}>
+                    <li key={item.id} className={!item.isCompleted ? "" : "completed"}>
                         <div className="view">
                             <input className="toggle" type="checkbox" />
                             <label>{item.title}</label>

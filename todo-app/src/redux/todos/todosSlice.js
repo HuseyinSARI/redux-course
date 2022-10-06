@@ -7,16 +7,21 @@ export const todosSlice = createSlice({
             {
                 id: "1",
                 title: "Learn Japanese",
-                isCompleted : false,
+                isCompleted: false,
             },
             {
-                id :"2",
-                title : "Read Manga",
-                isCompleted : true,
+                id: "2",
+                title: "Read Manga",
+                isCompleted: true,
             }
         ],
     },
-    reducers: {},
+    reducers: {
+        addTodo: (state, action) => {
+            state.items.push(action.payload);
+        }
+    },
 });
 
+export const { addTodo } = todosSlice.actions;
 export default todosSlice.reducer;
