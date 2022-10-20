@@ -9,5 +9,5 @@ function Footer() {
         </footer>
     )
 }
-
-export default Footer
+//  we can wrap this with "memo" because this is a full static component and will never change
+export default React.memo(Footer);

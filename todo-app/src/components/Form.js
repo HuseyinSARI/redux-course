@@ -4,19 +4,16 @@ import { useDispatch } from "react-redux";
 import { addTodo } from "../redux/todos/todosSlice";
 
 // unique id oluşturmak için kütüphane
-import { nanoid } from "@reduxjs/toolkit";
 
 function Form() {
 
     const [title, setTitle] = useState("");
-
     const dispatch = useDispatch();
 
     const handleSubmit = (e) => {
-        if(!title) return;
+        if (!title) return;
         e.preventDefault();
-
-        dispatch(addTodo({ id: nanoid(), title, isCompleted: false }));
+        dispatch(addTodo({ title }));
 
         setTitle([]);
     }
