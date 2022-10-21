@@ -1,6 +1,12 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-import { getTodosAsync, addTodoAsync, toggleTodoAsync, removeTodoAsync } from "./services"
+import {
+    getTodosAsync,
+    addTodoAsync,
+    toggleTodoAsync,
+    removeTodoAsync,
+    clearCompletedTodoAsync
+} from "./services"
 
 export const todosSlice = createSlice({
     name: 'todos',
@@ -89,7 +95,11 @@ export const todosSlice = createSlice({
             // second method same as toggle
             const index = state.items.findIndex((item) => item.id === id);
             state.items.splice(index, 1);
+        },
+        [clearCompletedTodoAsync.fulfilled]: (state, action)=>{
+            state.items = action.payload;            
         }
+
 
     }
 });

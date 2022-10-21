@@ -65,8 +65,14 @@ app.delete('/todos/:id', (req, res) => {
         todos.splice(index, 1);
     }
 
-    res.send(todos);
+    return res.send(todos);
 });
+
+app.delete("/todos", (req, res) =>{
+    todos = todos.filter((todo)=>(todo.isCompleted === false))
+
+    return res.send(todos)
+})
 
 const PORT = 7000;
 
