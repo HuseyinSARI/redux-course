@@ -3,9 +3,11 @@ import Loading from './Loading';
 import Error from './Error';
 import { useSelector, useDispatch } from "react-redux";
 import {
-    selectFilteredTodos, getTodosAsync,
-    toggleTodoAsync, removeTodoAsync
-} from "../redux/todos/todosSlice";
+    getTodosAsync,
+    toggleTodoAsync,
+    removeTodoAsync
+} from "../redux/todos/services";
+import { selectFilteredTodos } from "../redux/todos/todosSlice"
 
 
 function TodoList() {
@@ -25,7 +27,7 @@ function TodoList() {
     const handleDestroy = async (id) => {
 
         if (window.confirm("Are you sure?")) {
-           await dispatch(removeTodoAsync(id));
+            await dispatch(removeTodoAsync(id));
         }
     };
 
