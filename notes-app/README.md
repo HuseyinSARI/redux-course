@@ -4,6 +4,8 @@ Note-taking application I made to solidify learning Redux.
 
 It performs note taking, deleting, changing background color and searching on existing notes via Redux states.
 
+Live demo via Surge.sh [Go Live](https://laughable-notes.surge.sh/)
+
 ### Packages I use
 
 * Material UI
