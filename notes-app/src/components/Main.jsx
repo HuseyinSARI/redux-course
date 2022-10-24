@@ -1,17 +1,23 @@
-import React from 'react'
+import { useState, useEffect, forwardRef } from 'react'
+import { useSelector, useDispatch } from "react-redux";
+import { Container, Grid, Button, TextField, Dialog, Slide, } from "@mui/material"
+import NewNote from './NewNote';
+import NoteCars from './NoteCars';
+import { searchNotes } from "../redux/notes/notesSlice"
+import AddToPhotosIcon from '@mui/icons-material/AddToPhotos';
 
-import { Container, Grid, Stack, Button, Box, Paper, TextField, Dialog, Slide, DialogTitle, DialogContentText, DialogContent, DialogActions } from "@mui/material"
-import NotesMain from './NotesMain';
-import { useSelector } from "react-redux";
-
-const Transition = React.forwardRef(function Transition(props, ref) {
-    return <Slide direction="up" ref={ref} {...props} />;
+const Transition = forwardRef(function Transition(props, ref) {
+    return <Slide direction="right" ref={ref} {...props} />;
 });
 
 
 function Main() {
-    const items = useSelector((state) => state.notes.items)
-    const [open, setOpen] = React.useState(false);
+    const items = useSelector((state) => state.notes.filteredItems)
+    const baseItems = useSelector((state) => state.notes.items)
+    const dispatch = useDispatch();
+    const [open, setOpen] = useState(false);
+
+    const [keyword, setKeyword] = useState("");
 
     const handleClickOpen = () => {
         setOpen(true);
@@ -21,26 +27,46 @@ function Main() {
         setOpen(false);
     };
 
+    useEffect(() => {
+        dispatch(searchNotes(keyword));
+    }, [keyword, dispatch, baseItems])
+
     return (
-        <Container maxWidth="lg" sx={{ height: "100vh" }}>            
-            <Grid container>
-                <Grid item container>
-                    {items.map((item) => {
+        <Container maxWidth="lg" sx={{
+            minHeight: "100vh",
+            backgroundRepeat: 'no-repeat',
+            backgroundSize: "cover",
+            backgroundImage: "url('https://images.unsplash.com/photo-1598063183638-4ffe7c5f0f8d?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80')"
+        }} >
+            <Grid container spacing={3} >
+                <Grid sx={{marginTop:3}} item container justifyContent="center" alignItems="center">
+                    <Grid item md={3} justifyContent="flex-end">
+                        <Button  startIcon={<AddToPhotosIcon />} variant="contained" onClick={handleClickOpen}>
+                            Add New Note
+                        </Button>
+                    </Grid>
+                    <Grid item md={3} justifyContent="flex-start">
+                        <TextField
+                            value={keyword}
+                            onChange={(e) => setKeyword(e.target.value)}
+                            placeholder="Search"
+                            size='small'
+                            className="rounded-md"
+                            fullWidth
+                            sx={{ padding:"6px"}}
+                        />
+                    </Grid>
+                </Grid>
+                <Grid item container xs={12}>
+                    {items.map((item, index) => {
                         return (
-                            <Grid key={item.id} item xs={3}>
-                                {item.title} <br />
-                                {item.content}
+                            <Grid key={index} item xs={6} md={4} lg={3}>
+                                <NoteCars item={item} />
                             </Grid>
                         )
                     })}
                 </Grid>
-                <Grid position="fixed" bottom={50} right={0} left={0} >
-                    <Button variant="contained" onClick={handleClickOpen}>
-                        Add New Note
-                    </Button>
-                </Grid>
             </Grid>
-
             <Dialog
                 open={open}
                 TransitionComponent={Transition}
@@ -49,7 +75,7 @@ function Main() {
                 maxWidth="xs"
                 fullWidth
             >
-                <NotesMain close={handleClose} />
+                <NewNote close={handleClose} />
             </Dialog>
         </Container>
     )
