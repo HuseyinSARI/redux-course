@@ -5,6 +5,8 @@ import { ToastContainer, toast } from "react-toastify"
 import { useEffect } from "react";
 import { useSelector } from "react-redux"
 import 'react-toastify/dist/ReactToastify.css';
+import Container from '@mui/material/Container';
+import Detail from "./pages/Detail";
 
 
 function App() {
@@ -19,19 +21,18 @@ function App() {
 
 
   return (
-    <>
+    <Container maxWidth="lg">
       <nav>
         <ul>
           <li><Link to="/">Home</Link></li>
-          <li><Link to="/about">about</Link></li>
+          <li><Link to="/detail/char_id">Detail</Link></li>
           <li><Link to="/users">Users</Link></li>
         </ul>
       </nav>
 
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/about" element={<About />} />
-        <Route path="/users" element={<Users />} />
+        <Route path="/detail/:char_id" element={<Detail />} />
       </Routes>
 
       <ToastContainer
@@ -45,7 +46,7 @@ function App() {
         draggable
         pauseOnHover
         theme="light" />
-    </>
+    </Container>
 
   );
 }
