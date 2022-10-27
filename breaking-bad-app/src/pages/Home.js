@@ -2,11 +2,10 @@ import React, { useEffect } from 'react'
 import { useSelector, useDispatch } from "react-redux"
 import CharacterCard from '../components/CharacterCard';
 import Masonry from '@mui/lab/Masonry';
-import Container from '@mui/material/Container';
 import LoadingButton from '@mui/lab/LoadingButton';
 import { fetchCharacters } from '../redux/charactersSlice';
-import Loading from '../components/Loading';
 import KeyboardDoubleArrowDownIcon from '@mui/icons-material/KeyboardDoubleArrowDown';
+import Loading from '../components/Loading';
 
 function Home() {
 
@@ -22,9 +21,10 @@ function Home() {
         }
     }, [dispatch, status])
 
+    if(status === "loading" && nextPage === 0) return <Loading/>  
+
     return (
-        <div>
-            <h1>characters</h1>
+        <div className='pt-6'> 
             <Masonry columns={4} spacing={4} sx={{ alignContent: "center" }}>
                 {characters.map((character) => (
                     <CharacterCard character={character} key={character.char_id} />
@@ -42,7 +42,6 @@ function Home() {
                     {hasNextPage ? "Load More" : "No More Left"}
                 </LoadingButton>
             </div>
-
         </div>
     )
 }
