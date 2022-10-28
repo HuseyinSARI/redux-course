@@ -4,7 +4,7 @@ import { useSelector, useDispatch } from 'react-redux'
 // #region ----------- MUI imports ------------------------
 import {
   Button,
-  CssBaseline,
+  CssBaseline, //resetCSS
   Box,
   Container,
   Paper,
@@ -14,6 +14,12 @@ import Grid from '@mui/material/Unstable_Grid2';
 // #endregion ---------------------------------------------
 
 import { buy, sell } from "./redux/walletSlice";
+import ProductCard from './components/ProductCard';
+import products from './data/products';
+import Banner from './components/Banner';
+import RemainingMoney from './components/RemainingMoney';
+import ItemsTable from './components/ItemsTable';
+import Receipt from './components/Receipt';
 
 
 const Item = styled(Paper)(({ theme }) => ({
@@ -29,30 +35,25 @@ function App() {
   const dispatch = useDispatch();
   const { money, cart } = useSelector(state => state.wallet)
 
+  useEffect(() => {
+    console.log("cart : ", cart);
+    console.log("money : ", money);
+  }, [cart, money])
 
   return (
     <>
       <CssBaseline />
-      <Container maxWidth="lg" sx={{ paddingY: 3 }}>
-        <Grid container spacing={2}>
-          <Grid xs={12}>
-            <Item>Buraya Banner Gelecek</Item>
-          </Grid>
-          <Grid xs={12}>
-            <Item>Buraya Kalan Para Gelecek</Item>
-          </Grid>
-          <Grid xs={4}>
-            <Item>xs=4</Item>
-          </Grid>
-          <Grid xs={4}>
-            <Item>xs=4</Item>
-          </Grid>
-          <Grid xs={4}>
-            <Item>xs=8</Item>
-          </Grid>
-          <Grid xs={12}>
-            <Item>Buraya Cüzdan Gelecek</Item>
-          </Grid>
+      <Container maxWidth="lg" sx={{ paddingY: 3, backgroundColor: "gray" }}>
+        <Grid container spacing={3}>
+
+          <Banner/>
+
+          <RemainingMoney />
+
+          <ItemsTable />
+
+          <Receipt /> 
+
         </Grid>
       </Container>
     </>

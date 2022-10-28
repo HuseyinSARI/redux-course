@@ -1,64 +1,47 @@
 import { createSlice } from "@reduxjs/toolkit"
 
-
-const products = [
-    {
-        id: 1,
-        value: 15,
-    },
-    {
-        id: 2,
-        value: 20,
-    },
-    {
-        id: 3,
-        value: 30,
-    },
-    {
-        id: 4,
-        value: 50,
-    }
-]
+import products from "../data/products";
 
 
 export const walletSlice = createSlice({
     name: "wallet",
     initialState: {
         money: 1000,
-        cart: [
-            {
-                id: 1,
-                count: 1,
-            },
-            {
-                id: 2,
-                count: 2,
-            },
-            {
-                id: 3,
-                count: 3,
-            }
-        ]
+        cart: []
     },
     reducers: {
         buy: (state, action) => {
-            let id = Number(action.payload.id);  // Take Id 
+            let id = action.payload.id;  
 
-            let isInCart = state.cart.find((item) => item.id === id ? item.count += 1 : false);  // Check it is already in a cart or not
+            let itemInCart = state.cart.find((item) => item.id === id );  
 
-            if (!isInCart) state.cart.push({ id: id, count: 1 }) // is it not in a cart, push the new one
+            if(itemInCart) itemInCart.count += 1 ;
 
-            state.money -= products.find(product => product.id === id).value // reduce total money
+            if (!itemInCart) state.cart.push({ id: id, count: 1 }) 
+
+            state.money -= products.find(product => product.id == id).productPrice 
         },
         sell: (state, action) => {
-            let id = Number(action.payload.id);  // Take Id 
+            let id = action.payload.id;  
 
-            let isInCart = state.cart.find((item) => item.id === id ? item.count-- : false);  // Check it is already in a cart or not
+            let itemInCart = state.cart.find((item) => item.id === id);  
 
-            if(isInCart) state.money += products.find(product => product.id === id).value // Reduce total money
+            if(itemInCart) itemInCart.count -= 1 ;
 
-            if (isInCart?.count <= 0) state.cart = state.cart.filter(item => item.id !== id) // If the item count is zero, delete it from the cart.
-           
+            if (itemInCart) state.money += products.find(product => product.id === id).productPrice 
+
+            if (itemInCart?.count <= 0) state.cart = state.cart.filter(item => item.id !== id) 
+        },
+        buyMore: (state, action) => {
+            let id = action.payload.id;
+            let quantity = action.payload.quantity;
+            let productPrice = products.find(product => product.id === id).productPrice            
+            let itemInCart = state.cart.find((item) => item.id === id);  
+            
+            if(itemInCart) itemInCart.count += quantity;
+            if (!itemInCart) state.cart.push({ id: id, count: quantity }) 
+            state.money -= productPrice* quantity; 
+
         }
     }
 
