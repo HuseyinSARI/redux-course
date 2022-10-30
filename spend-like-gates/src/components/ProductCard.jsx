@@ -1,9 +1,10 @@
 import React, { useEffect, useRef } from 'react'
 import { Stack, Box, Button, TextField } from "@mui/material"
-
-import { buy, sell } from "../redux/walletSlice";
+import { buy, sell, buyNsellMore } from "../redux/walletSlice";
 import { useSelector, useDispatch } from 'react-redux'
 import { useState } from 'react';
+import { NumericFormat } from 'react-number-format';
+
 
 
 function ProductCard({ item }) {
@@ -15,43 +16,21 @@ function ProductCard({ item }) {
     const [isSellDisabled, setIsSellDisabled] = useState(false);
     const [cartCount, setCartCount] = useState(0);
 
-    const cartCountRef = useRef(0);
-
-
     const handleBuy = () => {
         dispatch(buy({ id }))
     }
     const handleSell = () => {
         dispatch(sell({ id }))
     }
-    
+
     const handleTextField = (value) => {
-
-        const newValue = Number(value);
-
-        cartCountRef.current = cartCount
-        const oldValue = cartCountRef.current;
-
-        if (oldValue > newValue) {
-            if (newValue <= 0) {
-                setCartCount(0)
-            } else {
-                setCartCount(newValue)
-
-            }
-            console.log(("decrease"));
+        if (value <= 0) {
+            setCartCount(0)
+            dispatch(buyNsellMore({ id: id, quantity: 0 }))
         } else {
-            setCartCount(newValue)
-            console.log("increase");
+            dispatch(buyNsellMore({ id: id, quantity: value }))
         }
-
-
-
-
     }
-
-    // useEffect(()=>{
-    // },[cartCount])
 
     useEffect(() => {
 
@@ -72,12 +51,37 @@ function ProductCard({ item }) {
 
     }, [cart])
 
+    let buyButtonStyle = {};
+    if (!isBuyDisabled) {
+        buyButtonStyle = {
+            color: "white", background: "linear-gradient(180deg,#2ecc71,#1abc9c)"
+        }
+    } else {
+        buyButtonStyle = {
+            color: "gray", background: "silver"
+        }
+    }
+
+    let sellButtonStyle = {};
+    if (!isSellDisabled) {
+        sellButtonStyle = {
+            color: "white", background: "linear-gradient(180deg,#f53b82,#f53b57)"
+        }
+    } else {
+        sellButtonStyle = {
+            color: "gray", background: "silver"
+        }
+    }
+
+
+
     return (
         <Stack
             direction="column"
             justifyContent="flex-end"
             alignItems="center"
             spacing={1}
+            className="rounded"
             sx={{ backgroundColor: "white", padding: 4 }}
         >
             <Box>
@@ -89,8 +93,12 @@ function ProductCard({ item }) {
                 alignItems="center"
                 spacing={1}
             >
-                <Box>{productName}</Box>
-                <Box>{productPrice}</Box>
+                <div className='text-2xl'  >
+                    {productName}
+                </div>
+
+                <NumericFormat className='text-xl text-green-600' displayType="text" prefix={'$'} thousandSeparator="," value={productPrice} />
+
             </Stack>
             <Stack
                 direction="row"
@@ -101,14 +109,14 @@ function ProductCard({ item }) {
                 <Button
                     disabled={isBuyDisabled}
                     onClick={(e) => handleBuy(Number(e.target.value))}
-                    sx={{ color: "white", background: "linear-gradient(180deg,#2ecc71,#1abc9c)" }}
+                    sx={buyButtonStyle}
                 >
                     Buy
                 </Button>
                 <TextField
                     value={cartCount}
                     onChange={e => handleTextField(e.target.value)}
-                    sx={{ width: 80 }}
+                    sx={{ width: 120 }}
                     size='small'
                     type='number'
                 >
@@ -117,7 +125,7 @@ function ProductCard({ item }) {
                 <Button
                     disabled={isSellDisabled}
                     onClick={handleSell}
-                    sx={{ color: "white", background: "linear-gradient(180deg,#f53b82,#f53b57)" }}
+                    sx={sellButtonStyle}
                 >
                     Sell
                 </Button>

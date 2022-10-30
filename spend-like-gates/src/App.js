@@ -43,7 +43,7 @@ function App() {
   return (
     <>
       <CssBaseline />
-      <Container maxWidth="lg" sx={{ paddingY: 3, backgroundColor: "gray" }}>
+      <Container maxWidth="lg" sx={{ paddingY: 3 }}>
         <Grid container spacing={3}>
 
           <Banner/>
