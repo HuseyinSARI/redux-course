@@ -3,13 +3,10 @@ import Grid from '@mui/material/Unstable_Grid2';
 import products from '../data/products';
 import { useSelector } from "react-redux"
 
-import { useCountUp } from "react-countup";
-
-
 
 function Receipt() {
 
-    const { money, cart } = useSelector(state => state.wallet)
+    const { cart } = useSelector(state => state.wallet)
     const [totalMoney, setTotalMoney] = useState(0)
 
 
@@ -24,6 +21,9 @@ function Receipt() {
         setTotalMoney(total)
     }, [cart])
 
+    if (cart.length <= 0) {
+        return;
+    }
 
 
     return (
@@ -56,21 +56,21 @@ function Receipt() {
                         const { productName, productPrice } = products.find(product => product.id === item.id)
 
                         return (
-                            <Grid key={item.id} container className="text-base" xs={12}>
-                                <Grid xs={5} >{productName}</Grid>
-                                <Grid xs={2}>x{nFormatter(item.count, 0)}</Grid>
-                                <Grid textAlign="right" paddingRight={0} xs={5}>{nFormatter(productPrice * item.count, 2)}</Grid>
+                            <Grid padding="6px" key={item.id} container className="text-base" xs={12}>
+                                <Grid xs={8} >{productName}</Grid>
+                                <Grid xs={1}>x{nFormatter(item.count, 0)}</Grid>
+                                <Grid textAlign="right" paddingRight={0} xs={3}> ${nFormatter(productPrice * item.count, 2)}</Grid>
                             </Grid>
                         )
                     })
                 }
 
-                <Grid 
-                container 
-                sx={{borderTop:2 , borderColor:"#2ecc71" , padding:0 , margin:0}}
-                xs={12}>
+                <Grid
+                    container
+                    sx={{ borderTop: 2, borderColor: "#2ecc71", padding: 0, margin: 0 }}
+                    xs={12}>
                     <Grid xs={6}> Total Money</Grid>
-                    <Grid textAlign="right" paddingRight={0} xs={6}>{totalMoney}</Grid>
+                    <Grid textAlign="right" paddingRight={0} xs={6}> ${totalMoney.toLocaleString("en-US")}</Grid>
                 </Grid>
             </Grid>
 

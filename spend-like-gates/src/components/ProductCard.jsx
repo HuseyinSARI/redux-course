@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect } from 'react'
 import { Stack, Box, Button, TextField } from "@mui/material"
 import { buy, sell, buyNsellMore } from "../redux/walletSlice";
 import { useSelector, useDispatch } from 'react-redux'
@@ -108,7 +108,7 @@ function ProductCard({ item }) {
             >
                 <Button
                     disabled={isBuyDisabled}
-                    onClick={(e) => handleBuy(Number(e.target.value))}
+                    onClick={(e) => handleBuy()}
                     sx={buyButtonStyle}
                 >
                     Buy
