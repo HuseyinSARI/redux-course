@@ -1,0 +1,3 @@
+# Contacts App
+
+A project to learn createEntityAdaptor and data normalization...
