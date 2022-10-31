@@ -3,7 +3,7 @@ import Contacts from './components/Contacts';
 
 function App() {
   return (
-    <div style={{textAlign:"center"}} >
+    <div className='container mx-auto h-screen flex items-center justify-center' >
       <Contacts /> 
     </div>
   );
