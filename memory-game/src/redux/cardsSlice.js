@@ -1,12 +1,14 @@
-import { createSlice} from '@reduxjs/toolkit'
+/* eslint-disable array-callback-return */
+import { createSlice } from '@reduxjs/toolkit'
 
-import { cardList } from '../data/data';
+import { cardList, shuffle } from '../data/data';
 
 export const cardsSlice = createSlice({
   name: 'cards',
   initialState: {
     items: cardList,
     compareArea: [],
+    isEnd: false,
     score: 0,
   },
   reducers: {
@@ -38,16 +40,32 @@ export const cardsSlice = createSlice({
       }
       state.compareArea = [];
 
+      let unMatchedCard = state.items.find(item => item.isMatch === false);
+      if (!unMatchedCard) {
+        state.isEnd = true;
+      }
     },
-    close: (state, action) => {
-      let selectedId = action.payload.id;
-      let selectedCard = state.items.find(item => item.id === selectedId)
 
-      selectedCard.isOpen = false;
+    triggerEnd: (state, action) => {
+      state.items.map(item => item.isOpen = true)
+      state.isEnd = true
+    },
+
+    reload: (state, action) => {
+      let list = shuffle([...state.items]);
+      state.items = list;
+      state.items.map(item => {
+        item.isOpen = false;
+        item.isMatch = false;
+      })
+      state.isEnd = false;
+      state.compareArea = [];
+      state.score = 0;
     }
+
   }
 })
 
-export const { compare, openCard, close } = cardsSlice.actions
+export const { compare, openCard, close, triggerEnd, reload } = cardsSlice.actions
 
 export default cardsSlice.reducer

@@ -18,15 +18,20 @@ function CardBoard() {
         if (compareArea.length === 2) {
             setTimeout(() => {
                 dispatch(compare())
-
-            }, 1000);
+            }, 800);
         }
     }, [compareArea])
 
 
 
     return (
-        <div className='' style={{display:"flex" , maxWidth:"1100px", flexFlow:"wrap"}}>
+        <div
+            style={{  }}
+            className='flex flex-row flex-wrap w-72 justify-center rounded-lg
+            bg-lime-300
+            sm:w-full sm:max-w-6xl
+            '
+        >
             {
                 items.map(card => (
                     <Card key={card.id} card={card} />
