@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react'
 
 import Draggable, { DraggableCore } from 'react-draggable'
 import { useSelector, useDispatch } from 'react-redux'
-import { click } from '../../redux/board/boardSlice'
+import { click, changeBoardLocation } from '../../redux/board/boardSlice'
 function Stone({ boardX, boardY, item }) {
 
   const { board, stonesMovementAreas } = useSelector(state => state.board);
@@ -24,52 +24,7 @@ function Stone({ boardX, boardY, item }) {
     y: boardY / 80,
   })
 
-  let defaultMoveableSquares = [
-    [0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0],
-  ];
-
-  let moveableSquares = [
-    [0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0],
-  ];
-
-  // col = x
-  // row = y
-  console.log(stonesMovementAreas);
-  moveableSquares = stonesMovementAreas;
-  // moveableSquares = defaultMoveableSquares.map((row, rowIndex) => {
-  //   return row.map((value, colIndex) => {
-  //     // console.log("v:", value, " r:", rowIndex, "c:", colIndex)
-  //     // if (rowIndex === 1 && colIndex === 1) {
-  //     //   value = 1
-  //     // }
-  //     if (rowIndex >= lastLocation.y - 1 &&
-  //       rowIndex <= lastLocation.y + 1 &&
-  //       colIndex >= lastLocation.x - 1 &&
-  //       colIndex <= lastLocation.x + 1) {
-  //       value = 1
-  //     }
-
-  //     return value;
-  //   })
-  // });
-
-  // console.log(moveableSquares);
-  // console.log("deneme:", deneme);
-
+ 
   const onStart = () => {
     dispatch(click({ lastLocation }))
   }
@@ -83,11 +38,11 @@ function Stone({ boardX, boardY, item }) {
       y: snapY / 80
     }
 
-    console.log("ll:", lastLocation, " l:", location);
+    // console.log("ll:", lastLocation, " l:", location);
 
     if (location.x >= 0 && location.y >= 0 && location.x <= 7 && location.y <= 7) {
-
-      if (moveableSquares[location.y][location.x] === 1) {
+      if (stonesMovementAreas[location.y][location.x] === 1) {
+        dispatch(changeBoardLocation({ lastLocation: lastLocation, newLocation: location }))
         setLastLocation(location)
         setState({
           controlledPosition: {
@@ -133,10 +88,8 @@ function Stone({ boardX, boardY, item }) {
       onDrag={onControlledDrag}
       onStop={onControlledDragStop}
     >
-      <div className='rounded-full w-20 h-20 border absolute'>
-        <br />
+      <div className='rounded-full w-20 h-20 border absolute flex justify-center '>
         X:{lastLocation.x}, Y:{lastLocation.y} <br />
-        {item}
       </div>
 
     </Draggable>

@@ -10,21 +10,27 @@ function Board() {
 
   return (
     <div
-      className='border flex flex-wrap box-content'
+      className='border flex flex-wrap box-content relative '
       style={{ width: "640px", height: "640px" }}>
       {
         board.map((row, rowIndex) => {
           return (
             row.map((item, colIndex) => {
-              if (item === 1)
-                return (
+              if (item > 0)
+                return (< >
+                  <div className='border w-20 h-20 '>
+                    {item}
+                  </div>
                   <Stone
                     key={String(rowIndex) + String(colIndex)}
                     boardX={colIndex * 80}
                     boardY={rowIndex * 80}
                     item={item}
                   />
-                )
+                </>)
+
+              return (<div key={String(rowIndex) + String(colIndex)} className='border w-20 h-20 '> 0 </div>)
+
             }))
 
         })
