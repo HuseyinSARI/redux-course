@@ -41,7 +41,7 @@ function Stone({ boardX, boardY, item }) {
     // console.log("ll:", lastLocation, " l:", location);
 
     if (location.x >= 0 && location.y >= 0 && location.x <= 7 && location.y <= 7) {
-      if (stonesMovementAreas[location.y][location.x] === 1) {
+      if (stonesMovementAreas[location.y][location.x] > 0) {
         dispatch(changeBoardLocation({ lastLocation: lastLocation, newLocation: location }))
         setLastLocation(location)
         setState({
@@ -86,9 +86,9 @@ function Stone({ boardX, boardY, item }) {
       position={controlledPosition}
       onStart={onStart}
       onDrag={onControlledDrag}
-      onStop={onControlledDragStop}
+      onStop={onControlledDragStop}      
     >
-      <div className='rounded-full w-20 h-20 border absolute flex justify-center '>
+      <div className={` rounded-full w-20 h-20 border absolute flex justify-center ${item===1 ? "bg-white text-black" : "bg-black text-white"} `}>
         X:{lastLocation.x}, Y:{lastLocation.y} <br />
       </div>
 

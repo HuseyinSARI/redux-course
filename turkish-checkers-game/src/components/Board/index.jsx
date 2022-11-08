@@ -4,7 +4,7 @@ import Draggable, { DraggableCore } from 'react-draggable'
 import Stone from '../Stone'
 
 function Board() {
-  const { board } = useSelector(state => state.board);
+  const { board, stonesMovementAreas } = useSelector(state => state.board);
   const [setX, setSetX] = useState(0)
 
 
@@ -18,8 +18,8 @@ function Board() {
             row.map((item, colIndex) => {
               if (item > 0)
                 return (< >
-                  <div className='border w-20 h-20 '>
-                    {item}
+                  <div className=' border w-20 h-20 flex justify-center items-center'>
+                    {stonesMovementAreas[rowIndex][colIndex]}
                   </div>
                   <Stone
                     key={String(rowIndex) + String(colIndex)}
@@ -29,7 +29,9 @@ function Board() {
                   />
                 </>)
 
-              return (<div key={String(rowIndex) + String(colIndex)} className='border w-20 h-20 '> 0 </div>)
+              return (<div key={String(rowIndex) + String(colIndex)} className='border w-20 h-20 flex justify-center items-center'>
+                 {stonesMovementAreas[rowIndex][colIndex]}
+              </div>)
 
             }))
 
