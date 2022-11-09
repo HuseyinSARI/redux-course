@@ -1,51 +1,5 @@
+/* eslint-disable array-callback-return */
 import { createSlice, current } from "@reduxjs/toolkit";
-
-const allStones = [
-  {
-    location: {
-      x: 0,
-      y: 0,
-    },
-    id: 1,
-    type: 1,
-    forcedMove: false,
-    isKing: false,
-    color: "white",
-    moveArea: [
-      [0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0],
-    ],
-  },
-  {
-    location: {
-      x: 0,
-      y: 0,
-    },
-    id: 1,
-    type: 1,
-    forcedMove: false,
-    isKing: false,
-    color: "white",
-    moveArea: [
-      [0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 0, 0, 0],
-    ],
-  },
-
-]
-
 
 const moveEverywhere = ({ board, moveArea, location }) => {
   const { x, y } = location;
@@ -208,6 +162,39 @@ const calculateMoveArea = ({ board, location, turn }) => {
   return newMoveArea;
 }
 
+const isForcedMoveExist = ({ board, turn }) => {
+  let allStoneMoves = [];
+
+  board.map((row, rowIndex) => {
+    row.map((item, colIndex) => {
+      let location = { x: colIndex, y: rowIndex }
+
+      if (turn === "white")
+        if (item === 1 || item === 3)
+          allStoneMoves.push(calculateMoveArea({ board, location, turn }))
+
+      if (turn === "black")
+        if (item === 2 || item === 4)
+          allStoneMoves.push(calculateMoveArea({ board, location, turn }))
+
+    })
+  })
+
+  let forcedMoves = [];
+
+  allStoneMoves.map((first) => {
+    first.map((row, rowIndex) => {
+      row.map((item, colIndex) => {
+        if (item === 2)
+          forcedMoves.push({ x: colIndex, y: rowIndex })
+      })
+    })
+  })
+
+  return forcedMoves;
+
+  // console.log(allStoneMoves);
+}
 
 export const boardSlice = createSlice({
   name: "board",
@@ -215,10 +202,10 @@ export const boardSlice = createSlice({
     board: [
       [0, 0, 0, 0, 0, 0, 0, 0],
       [0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 1, 2, 0, 0, 0, 0],
+      [0, 0, 2, 2, 0, 0, 0, 0],
       [0, 0, 0, 2, 0, 0, 0, 0],
       [0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 2, 0, 0],
+      [0, 0, 0, 0, 0, 1, 0, 0],
       [0, 0, 0, 0, 1, 1, 0, 0],
       [0, 0, 0, 0, 0, 0, 0, 0],
     ],
@@ -233,32 +220,11 @@ export const boardSlice = createSlice({
       [0, 0, 0, 0, 0, 0, 0, 0],
     ],
     turn: "white",
-    stone: {
-      location: {
-        x: 0,
-        y: 0,
-      },
-      id: 1,
-      type: 1,
-      forcedMove: false,
-      isKing: false,
-      color: "white",
-      moveArea: [
-        [0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0, 0, 0, 0],
-      ],
-    }
+    forcedMoves: [],
+    isForced: false,
   },
   reducers: {
-    startGame: (state, action) => { 
-      state.board.map()
-    },
+    startGame: (state, action) => { },
     click: (state, action) => {
       const location = action.payload.lastLocation;
 
@@ -267,6 +233,14 @@ export const boardSlice = createSlice({
         location,
         turn: state.turn
       });
+
+      state.forcedMoves = isForcedMoveExist({
+        board: state.board,
+        turn: state.turn
+      })
+
+      console.log(state.forcedMoves);
+
       // console.log("board");
       // console.log(current(state.board));
       // console.log("move area");
@@ -283,8 +257,16 @@ export const boardSlice = createSlice({
       let { newBoard, eatenStone } = eatStone({ lastLocation, newLocation, board, turn })
       state.board = newBoard
 
+      state.forcedMoves = isForcedMoveExist({
+        board: state.board,
+        turn: state.turn
+      })
+      console.log("eaten stone:", eatenStone);
+
       if (!eatenStone)
         state.turn = state.turn === "white" ? "black" : "white"
+
+      console.log(state.forcedMoves);
 
       // console.log("board");
       // console.log(state.board);
