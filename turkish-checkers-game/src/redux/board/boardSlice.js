@@ -1,5 +1,52 @@
 import { createSlice, current } from "@reduxjs/toolkit";
 
+const allStones = [
+  {
+    location: {
+      x: 0,
+      y: 0,
+    },
+    id: 1,
+    type: 1,
+    forcedMove: false,
+    isKing: false,
+    color: "white",
+    moveArea: [
+      [0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0],
+    ],
+  },
+  {
+    location: {
+      x: 0,
+      y: 0,
+    },
+    id: 1,
+    type: 1,
+    forcedMove: false,
+    isKing: false,
+    color: "white",
+    moveArea: [
+      [0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0],
+    ],
+  },
+
+]
+
+
 const moveEverywhere = ({ board, moveArea, location }) => {
   const { x, y } = location;
   const newMoveArea = moveArea.map((row, rowIndex) => {
@@ -98,41 +145,65 @@ const eatStone = ({ lastLocation, newLocation, board }) => {
   let { x: lastX, y: lastY } = lastLocation;
   let { x: newX, y: newY } = newLocation;
   const newBoard = [...board];
+  let eatenStone = null
 
   if (lastX === newX) {
     if (lastY > newY) [lastY, newY] = [newY, lastY];
     for (let index = lastY + 1; index < newY; index++) {
+      if (board[index][lastX] !== 0) {
+        eatenStone = {
+          stone: board[index][lastX],
+          x: lastX,
+          y: index,
+        }
+      }
       newBoard[index][lastX] = 0;
     }
   } else {
     if (lastX > newX) [lastX, newX] = [newX, lastX];
     for (let index = lastX + 1; index < newX; index++) {
+
+      if (board[lastY][index] !== 0) {
+        eatenStone = {
+          stone: board[lastY][index],
+          x: index,
+          y: lastY,
+        }
+      }
+
       newBoard[lastY][index] = 0;
     }
   }
-  return newBoard;
+  return { newBoard, eatenStone };
 };
 
 
-const calculateMoveArea = ({ board, location }) => {
+const calculateMoveArea = ({ board, location, turn }) => {
   const { x, y } = location;
   const stone = board[y][x];
   let newMoveArea = Array.from(Array(8), _ => Array(8).fill(0));
 
-  if (stone === 1 || stone === 2) {
-    newMoveArea = standardMove({ board, moveArea: newMoveArea, location })
-    newMoveArea = standardEatMove({ board, moveArea: newMoveArea, location })
+  if (turn === "white") {
+    if (stone === 1) {
+      newMoveArea = standardMove({ board, moveArea: newMoveArea, location })
+      newMoveArea = standardEatMove({ board, moveArea: newMoveArea, location })
+    }
+    if (stone === 3) {
+      return true;
+    }
   }
 
-  if (stone === 3) {
-    return true
+  if (turn === "black") {
+    if (stone === 2) {
+      newMoveArea = standardMove({ board, moveArea: newMoveArea, location })
+      newMoveArea = standardEatMove({ board, moveArea: newMoveArea, location })
+    }
+    if (stone === 4) {
+      return true;
+    }
   }
 
-  if (stone === 4) {
-    return true
-  }
-
-  console.log(newMoveArea);
+  // console.log(newMoveArea);
 
   return newMoveArea;
 }
@@ -161,26 +232,65 @@ export const boardSlice = createSlice({
       [0, 0, 0, 0, 0, 0, 0, 0],
       [0, 0, 0, 0, 0, 0, 0, 0],
     ],
+    turn: "white",
+    stone: {
+      location: {
+        x: 0,
+        y: 0,
+      },
+      id: 1,
+      type: 1,
+      forcedMove: false,
+      isKing: false,
+      color: "white",
+      moveArea: [
+        [0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0],
+      ],
+    }
   },
   reducers: {
-    startGame: (state, action) => { },
+    startGame: (state, action) => { 
+      state.board.map()
+    },
     click: (state, action) => {
       const location = action.payload.lastLocation;
 
       state.stonesMovementAreas = calculateMoveArea({
         board: state.board,
         location,
+        turn: state.turn
       });
+      // console.log("board");
+      // console.log(current(state.board));
+      // console.log("move area");
+      // console.log(state.stonesMovementAreas);
 
-      // state.stonesMovementAreas = moveEverywhere({ board: state.board, moveArea: state.stonesMovementAreas, location });
     },
     changeBoardLocation: (state, action) => {
 
       const { lastLocation, newLocation } = action.payload;
       const board = state.board;
+      const turn = state.turn;
       state.board = changeLocation({ lastLocation, newLocation, board });
-      state.board = eatStone  ({ lastLocation, newLocation, board })
 
+      let { newBoard, eatenStone } = eatStone({ lastLocation, newLocation, board, turn })
+      state.board = newBoard
+
+      if (!eatenStone)
+        state.turn = state.turn === "white" ? "black" : "white"
+
+      // console.log("board");
+      // console.log(state.board);
+      // console.log("move area");
+      // console.log(current(state.stonesMovementAreas));
+      state.stonesMovementAreas = Array.from(Array(8), _ => Array(8).fill(0))
     },
   },
 });
