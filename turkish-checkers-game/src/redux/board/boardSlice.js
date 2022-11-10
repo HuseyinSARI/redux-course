@@ -73,6 +73,156 @@ const standardEatMove = ({ board, moveArea, location }) => {
   return newMoveArea;
 }
 
+const kingMove = ({ board, moveArea, location }) => {
+  const { x, y } = location;
+  let newMoveArea = [...moveArea];
+  const stone = board[y][x];
+  let stonesOnWay = [];
+
+  for (let index = y - 1; index >= 0; index--) {
+    const stoneOnBoard = board[index][x];
+    if (stoneOnBoard > 0) {
+      stonesOnWay.push({
+        direction: "up",
+        stone:
+        {
+          type: stoneOnBoard,
+          x: x,
+          y: index
+        }
+      })
+      break;
+    }
+    newMoveArea[index][x] = 1;
+  }
+  for (let index = y + 1; index <= 7; index++) {
+    const stoneOnBoard = board[index][x];
+    if (stoneOnBoard > 0) {
+      stonesOnWay.push({
+        direction: "down",
+        stone:
+        {
+          type: stoneOnBoard,
+          x: x,
+          y: index
+        }
+      })
+      break;
+    }
+    newMoveArea[index][x] = 1;
+  }
+  for (let index = x - 1; index >= 0; index--) {
+    const stoneOnBoard = board[y][index];
+    if (stoneOnBoard > 0) {
+      stonesOnWay.push({
+        direction: "left",
+        stone:
+        {
+          type: stoneOnBoard,
+          x: index,
+          y: y
+        }
+      })
+      break;
+    }
+    newMoveArea[y][index] = 1;
+  }
+  for (let index = x + 1; index <= 7; index++) {
+    const stoneOnBoard = board[y][index];
+    if (stoneOnBoard > 0) {
+      stonesOnWay.push({
+        direction: "right",
+        stone:
+        {
+          type: stoneOnBoard,
+          x: index,
+          y: y
+        }
+      })
+      break;
+    }
+    newMoveArea[y][index] = 1;
+  }
+
+  return { newMoveArea, stonesOnWay };
+}
+
+const kingEatMove = ({ board, moveArea, location, stonesOnWay }) => {
+  const { x, y } = location;
+  let newMoveArea = [...moveArea];
+  const stone = board[y][x];
+  let newStonesOnWay = [...stonesOnWay]
+  let stoneColor;
+  if (stone === 1 || stone === 3)
+    stoneColor = "white";
+  if (stone === 2 || stone === 4)
+    stoneColor = "black"
+
+  newStonesOnWay = newStonesOnWay.filter(item => {
+    // console.log("item.stone.type",item.stone.type);
+    let stoneOnWayColor;
+    if (item.stone.type % 2 === 1) {
+      stoneOnWayColor = "white"
+    } else {
+      stoneOnWayColor = "black"
+    }
+    if (stoneOnWayColor !== stoneColor)
+      return item;
+  })
+
+  newStonesOnWay.map((stoneOnWay) => {
+    switch (stoneOnWay.direction) {
+      case "up":
+        if (stoneOnWay.stone.y - 1 >= 0) {
+          for (let index = stoneOnWay.stone.y - 1; index >= 0; index--) {
+            if (board[index][stoneOnWay.stone.x] === 0)
+              newMoveArea[index][stoneOnWay.stone.x] = 2
+            else
+              break
+          }
+        }
+        break;
+      case "down":
+        if (stoneOnWay.stone.y + 1 <= 7) {
+          for (let index = stoneOnWay.stone.y + 1; index <= 7; index++) {
+            if (board[index][stoneOnWay.stone.x] === 0)
+              newMoveArea[index][stoneOnWay.stone.x] = 2
+            else
+              break
+          }
+        }
+        break;
+      case "left":
+        if (stoneOnWay.stone.x - 1 >= 0) {
+          for (let index = stoneOnWay.stone.x - 1; index >= 0; index--) {
+            if (board[stoneOnWay.stone.y][index] === 0)
+              newMoveArea[stoneOnWay.stone.y][index] = 2
+            else
+              break
+          }
+        }
+        break;
+      case "right":
+        if (stoneOnWay.stone.x + 1 <= 7) {
+          for (let index = stoneOnWay.stone.x + 1; index <= 7; index++) {
+            if (board[stoneOnWay.stone.y][index] === 0)
+              newMoveArea[stoneOnWay.stone.y][index] = 2
+            else
+              break
+          }
+        }
+        break;
+
+
+      default:
+        break;
+    }
+  })
+
+  return newMoveArea;
+}
+
+
 // bir taşı bir yerden siler, diğer yere ekler  -- return newBoard
 const changeLocation = ({ lastLocation, newLocation, board }) => {
   const { x: lastX, y: lastY } = lastLocation;
@@ -81,18 +231,23 @@ const changeLocation = ({ lastLocation, newLocation, board }) => {
   let newBoard = [...board];
 
   newBoard[lastY][lastX] = 0;
-  newBoard[newY][newX] = stone;
+
+  // console.log(newY, newX);
+
+  if ((newY === 0 || newY === 7) && (stone === 1 || stone === 2)) {
+    if (stone === 1 && newY === 0)
+      newBoard[newY][newX] = 3;
+
+    if (stone === 2 && newY === 7)
+      newBoard[newY][newX] = 4;
+  } else {
+    newBoard[newY][newX] = stone;
+  }
 
   return newBoard;
 };
 
-// verilen locasyondaki taşı siler -- return newBoard
-const removeOnBoard = ({ location, board }) => {
-  const { x, y } = location;
-  const newBoard = [...board];
-  newBoard[y][x] = 0
-  return newBoard;
-};
+
 
 // iki konum arasındaki bütün taşları yer. return newBoard
 const eatStone = ({ lastLocation, newLocation, board }) => {
@@ -143,7 +298,10 @@ const calculateMoveArea = ({ board, location, turn }) => {
       newMoveArea = standardEatMove({ board, moveArea: newMoveArea, location })
     }
     if (stone === 3) {
-      return true;
+      newMoveArea = kingMove({ board, moveArea: newMoveArea, location }).newMoveArea
+      let stonesOnWay = kingMove({ board, moveArea: newMoveArea, location }).stonesOnWay
+
+      newMoveArea = kingEatMove({ board, moveArea: newMoveArea, location, stonesOnWay })
     }
   }
 
@@ -153,7 +311,11 @@ const calculateMoveArea = ({ board, location, turn }) => {
       newMoveArea = standardEatMove({ board, moveArea: newMoveArea, location })
     }
     if (stone === 4) {
-      return true;
+      newMoveArea = kingMove({ board, moveArea: newMoveArea, location }).newMoveArea
+
+      let stonesOnWay = kingMove({ board, moveArea: newMoveArea, location }).stonesOnWay
+
+      newMoveArea = kingEatMove({ board, moveArea: newMoveArea, location, stonesOnWay })
     }
   }
 
@@ -190,23 +352,45 @@ const isForcedMoveExist = ({ board, turn }) => {
       })
     })
   })
+  return forcedMoves;
+}
+
+const isForcedMoveExistForOneStone = ({ board, turn, location }) => {
+  const stone = board[location.y][location.x];
+  let stoneMoves = []
+  if (turn === "white")
+    if (stone === 1 || stone === 3)
+      stoneMoves = calculateMoveArea({ board, location, turn })
+
+  if (turn === "black")
+    if (stone === 2 || stone === 4)
+      stoneMoves = calculateMoveArea({ board, location, turn })
+
+  let forcedMoves = [];
+
+  stoneMoves.map((row, rowIndex) => {
+    row.map((item, colIndex) => {
+      if (item === 2)
+        forcedMoves.push({ x: colIndex, y: rowIndex })
+    })
+  })
 
   return forcedMoves;
-
-  // console.log(allStoneMoves);
 }
+
+
 
 export const boardSlice = createSlice({
   name: "board",
   initialState: {
     board: [
       [0, 0, 0, 0, 0, 0, 0, 0],
+      [2, 2, 2, 2, 2, 2, 2, 2],
+      [2, 2, 2, 2, 2, 2, 2, 2],
       [0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 2, 2, 0, 0, 0, 0],
-      [0, 0, 0, 2, 0, 0, 0, 0],
       [0, 0, 0, 0, 0, 0, 0, 0],
-      [0, 0, 0, 0, 0, 1, 0, 0],
-      [0, 0, 0, 0, 1, 1, 0, 0],
+      [1, 1, 1, 1, 1, 1, 1, 1],
+      [1, 1, 1, 1, 1, 1, 1, 1],
       [0, 0, 0, 0, 0, 0, 0, 0],
     ],
     stonesMovementAreas: [
@@ -222,8 +406,13 @@ export const boardSlice = createSlice({
     turn: "white",
     forcedMoves: [],
     isForced: false,
+    isStoneEaten: false,
+    locationLastMovingStone: {},
   },
   reducers: {
+    test: (state, action) => {
+      // kingMove({board:state.board,moveArea:state.stonesMovementAreas,location})
+    },
     startGame: (state, action) => { },
     click: (state, action) => {
       const location = action.payload.lastLocation;
@@ -234,17 +423,13 @@ export const boardSlice = createSlice({
         turn: state.turn
       });
 
-      state.forcedMoves = isForcedMoveExist({
-        board: state.board,
-        turn: state.turn
-      })
+      if (state.isStoneEaten) {
+        state.forcedMoves = isForcedMoveExistForOneStone({ board: state.board, turn: state.turn, location: state.locationLastMovingStone })
+      } else {
+        state.forcedMoves = isForcedMoveExist({ board: state.board, turn: state.turn })
+      }
 
-      console.log(state.forcedMoves);
-
-      // console.log("board");
-      // console.log(current(state.board));
-      // console.log("move area");
-      // console.log(state.stonesMovementAreas);
+      // console.log("forcedMoves", state.forcedMoves);
 
     },
     changeBoardLocation: (state, action) => {
@@ -253,29 +438,32 @@ export const boardSlice = createSlice({
       const board = state.board;
       const turn = state.turn;
       state.board = changeLocation({ lastLocation, newLocation, board });
+      state.locationLastMovingStone = newLocation;
 
       let { newBoard, eatenStone } = eatStone({ lastLocation, newLocation, board, turn })
       state.board = newBoard
 
-      state.forcedMoves = isForcedMoveExist({
-        board: state.board,
-        turn: state.turn
-      })
-      console.log("eaten stone:", eatenStone);
+      if (eatenStone) {
+        state.forcedMoves = isForcedMoveExistForOneStone({ board, turn, location: newLocation })
+        state.isStoneEaten = true;
+      } else {
+        state.forcedMoves = isForcedMoveExist({ board: state.board, turn: state.turn })
+        state.isStoneEaten = false;
+      }
 
-      if (!eatenStone)
+
+      console.log("eatenStone", eatenStone);
+      console.log("forcedMoves", state.forcedMoves);
+      if (!eatenStone || state.forcedMoves.length === 0){
         state.turn = state.turn === "white" ? "black" : "white"
+        state.isStoneEaten = false;
+      }
 
-      console.log(state.forcedMoves);
-
-      // console.log("board");
-      // console.log(state.board);
-      // console.log("move area");
-      // console.log(current(state.stonesMovementAreas));
-      state.stonesMovementAreas = Array.from(Array(8), _ => Array(8).fill(0))
     },
   },
 });
 
 export default boardSlice.reducer;
-export const { click, changeBoardLocation } = boardSlice.actions;
+export const { click, changeBoardLocation, test } = boardSlice.actions;
+
+

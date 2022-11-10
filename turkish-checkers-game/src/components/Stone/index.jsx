@@ -6,7 +6,7 @@ import { useSelector, useDispatch } from 'react-redux'
 import { click, changeBoardLocation } from '../../redux/board/boardSlice'
 function Stone({ boardX, boardY, item }) {
 
-  const { board, stonesMovementAreas ,forcedMoves } = useSelector(state => state.board);
+  const { board, stonesMovementAreas, forcedMoves } = useSelector(state => state.board);
   const dispatch = useDispatch();
 
   const [state, setState] = useState({
@@ -24,7 +24,7 @@ function Stone({ boardX, boardY, item }) {
     y: boardY / 80,
   })
 
- 
+
   const onStart = () => {
     dispatch(click({ lastLocation }))
   }
@@ -42,8 +42,8 @@ function Stone({ boardX, boardY, item }) {
 
     if (location.x >= 0 && location.y >= 0 && location.x <= 7 && location.y <= 7) {
 
-      if(forcedMoves.length > 0){
-        if (stonesMovementAreas[location.y][location.x] === 2 ) {
+      if (forcedMoves.length > 0) {
+        if (stonesMovementAreas[location.y][location.x] === 2) {
           dispatch(changeBoardLocation({ lastLocation: lastLocation, newLocation: location }))
           setLastLocation(location)
           setState({
@@ -54,7 +54,7 @@ function Stone({ boardX, boardY, item }) {
         } else {
           setLocationAsLastLocation();
         }
-      }else{
+      } else {
         if (stonesMovementAreas[location.y][location.x] === 1) {
           dispatch(changeBoardLocation({ lastLocation: lastLocation, newLocation: location }))
           setLastLocation(location)
@@ -67,7 +67,6 @@ function Stone({ boardX, boardY, item }) {
           setLocationAsLastLocation();
         }
       }
-     
 
     } else {
       setLocationAsLastLocation();
@@ -75,7 +74,7 @@ function Stone({ boardX, boardY, item }) {
 
   };
 
-  const setLocationAsLastLocation = () => {    
+  const setLocationAsLastLocation = () => {
     setState({
       controlledPosition: {
         x: lastLocation.x * 80, y: lastLocation.y * 80
@@ -101,10 +100,10 @@ function Stone({ boardX, boardY, item }) {
       position={controlledPosition}
       onStart={onStart}
       onDrag={onControlledDrag}
-      onStop={onControlledDragStop}      
+      onStop={onControlledDragStop}
     >
-      <div className={` rounded-full w-20 h-20 border absolute flex justify-center ${item===1 ? "bg-white text-black" : "bg-black text-white"} `}>
-        X:{lastLocation.x}, Y:{lastLocation.y} <br />
+      <div className={` rounded-full w-20 h-20 border absolute flex justify-center ${item === 1 || item === 3 ? "bg-white text-black" : "bg-black text-white"} `}>
+        X:{lastLocation.x}, Y:{lastLocation.y} <br /> type:{item}
       </div>
 
     </Draggable>
