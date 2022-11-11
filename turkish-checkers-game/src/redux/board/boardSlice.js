@@ -452,12 +452,14 @@ export const boardSlice = createSlice({
       }
 
 
-      console.log("eatenStone", eatenStone);
-      console.log("forcedMoves", state.forcedMoves);
-      if (!eatenStone || state.forcedMoves.length === 0){
+      // console.log("eatenStone", eatenStone);
+      // console.log("forcedMoves", state.forcedMoves);
+      if (!eatenStone || state.forcedMoves.length === 0) {
         state.turn = state.turn === "white" ? "black" : "white"
         state.isStoneEaten = false;
       }
+
+      state.stonesMovementAreas = Array.from(Array(8), _ => Array(8).fill(0));
 
     },
   },

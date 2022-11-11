@@ -12,7 +12,7 @@ function Stone({ boardX, boardY, item }) {
   const [state, setState] = useState({
     activeDrags: 0,
     deltaPosition: {
-      x: 3, y: 3
+      x: 0, y: 0
     },
     controlledPosition: {
       x: boardX, y: boardY
@@ -38,7 +38,7 @@ function Stone({ boardX, boardY, item }) {
       y: snapY / 80
     }
 
-    // console.log("ll:", lastLocation, " l:", location);
+    console.log({e, data});
 
     if (location.x >= 0 && location.y >= 0 && location.x <= 7 && location.y <= 7) {
 

@@ -1,8 +1,45 @@
 import React from 'react'
+import Stone from '../NewStone'
+import { useDispatch, useSelector } from 'react-redux'
 
-function Square({black}) {
-    const fill = black ? 'black' : 'white'
-    return <div style={{ backgroundColor: fill }} />
+import Draggable, { DraggableCore } from 'react-draggable'
+
+function Square({ x, y }) {
+    const { board, stonesMovementAreas, forcedMoves } = useSelector(state => state.board)
+
+
+    let isSquaredForced = false
+    forcedMoves.map(fm => {
+        if (fm.x === x && fm.y === y) {
+            isSquaredForced = true;
+        }
+    })
+
+    return (
+        <div className='border border-solid w-20 h-20 border-white relative'>
+
+            {stonesMovementAreas[y][x] === 1 && <div className='absolute w-full h-full bg-green-500 '></div>}
+
+            {stonesMovementAreas[y][x] === 2 && <div className='absolute w-full h-full bg-red-300 '></div>}
+
+            {isSquaredForced && <div className='absolute w-full h-full  bg-red-500 '></div>}
+
+            {board[y][x] > 0 &&
+                <Stone
+                    x={x}
+                    y={y}
+                />
+            }
+
+        </div>
+    )
 }
 
 export default Square
+
+// {board[y][x] > 0  &&
+//     <Stone
+//         boardX={x*80}
+//         boardY={y*80}
+//     />
+// }
