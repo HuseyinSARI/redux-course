@@ -1,10 +1,13 @@
 import './App.css';
+import 'react-toastify/dist/ReactToastify.css';
 
-import { useSelector } from 'react-redux'
-import Board from './components/Board';
-import { test } from './redux/board/boardSlice'
-import { useDispatch } from 'react-redux'
 import { useState, useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux'
+import Info from './components/Info';
+import Board from './components/Board';
+import { ToastContainer, toast } from 'react-toastify';
+
+
 function App() {
 
   const { item, forcedMoves, board, isStoneEaten, turn, locationLastMovingStone, stonesMovementAreas } = useSelector(state => state.board)
@@ -13,7 +16,7 @@ function App() {
   const [isForced, setIsForced] = useState(false)
 
   useEffect(() => {
-    if (forcedMoves.length>0) {
+    if (forcedMoves.length > 0) {
       setIsForced(true)
     } else {
       setIsForced(false)
@@ -26,11 +29,24 @@ function App() {
     // dispatch(test())
   }
   return (
-    <div className='min-h-screen flex flex-col justify-center items-center bg-slate-500 '>
-      <button onClick={handleClick}>test</button>
-     <div>turn : {turn} ,  {isForced && <span>forced move exist</span>}  </div> 
-      <Board />
+    <div className='min-h-screen w-full m-auto  bg-slate-300 '>
+      <ToastContainer
+        position="top-center"
+        autoClose={500}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        draggable
+        pauseOnHover={false}
+        theme="light"
+      />
+      <div className='container min-h-screen mx-auto w-96 sm:w-full flex  flex-col items-center  bg-slate-500'>
+        <Info />
+        <Board />
+
+      </div>
     </div>
+
   );
 }
 

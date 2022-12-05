@@ -42,30 +42,30 @@ const standardEatMove = ({ board, moveArea, location }) => {
   let newMoveArea = [...moveArea];
 
   if (stone === 1) {
-    if (board[y - 1]?.[x] !== undefined && board[y - 1][x] === 2)
+    if (board[y - 1]?.[x] !== undefined && (board[y - 1][x] === 2 || board[y - 1][x] === 4))
       if (board[y - 2]?.[x] !== undefined && board[y - 2][x] === 0)
         newMoveArea[y - 2][x] = 2;
 
-    if (board[y]?.[x - 1] !== undefined && board[y][x - 1] === 2)
+    if (board[y]?.[x - 1] !== undefined && (board[y][x - 1] === 2 || board[y][x - 1] === 4))
       if (board[y]?.[x - 2] !== undefined && board[y][x - 2] === 0)
         newMoveArea[y][x - 2] = 2;
 
-    if (board[y]?.[x + 1] !== undefined && board[y][x + 1] === 2)
+    if (board[y]?.[x + 1] !== undefined && (board[y][x + 1] || board[y][x + 1]) === 4)
       if (board[y]?.[x + 2] !== undefined && board[y][x + 2] === 0)
         newMoveArea[y][x + 2] = 2;
   }
 
 
   if (stone === 2) {
-    if (board[y + 1]?.[x] !== undefined && board[y + 1][x] === 1)
+    if (board[y + 1]?.[x] !== undefined && (board[y + 1][x] === 1 || board[y + 1][x] === 3 ))
       if (board[y + 2]?.[x] !== undefined && board[y + 2][x] === 0)
         newMoveArea[y + 2][x] = 2;
 
-    if (board[y]?.[x - 1] !== undefined && board[y][x - 1] === 1)
+    if (board[y]?.[x - 1] !== undefined && (board[y][x - 1] === 1 || board[y][x - 1] === 3 ))
       if (board[y]?.[x - 2] !== undefined && board[y][x - 2] === 0)
         newMoveArea[y][x - 2] = 2;
 
-    if (board[y]?.[x + 1] !== undefined && board[y][x + 1] === 1)
+    if (board[y]?.[x + 1] !== undefined && (board[y][x + 1] === 1 || board[y][x + 1] === 3 ))
       if (board[y]?.[x + 2] !== undefined && board[y][x + 2] === 0)
         newMoveArea[y][x + 2] = 2;
   }
@@ -405,7 +405,6 @@ export const boardSlice = createSlice({
     ],
     turn: "white",
     forcedMoves: [],
-    isForced: false,
     isStoneEaten: false,
     locationLastMovingStone: {},
   },
@@ -451,11 +450,11 @@ export const boardSlice = createSlice({
         state.isStoneEaten = false;
       }
 
-
       // console.log("eatenStone", eatenStone);
       // console.log("forcedMoves", state.forcedMoves);
       if (!eatenStone || state.forcedMoves.length === 0) {
         state.turn = state.turn === "white" ? "black" : "white"
+        state.forcedMoves = [];
         state.isStoneEaten = false;
       }
 

@@ -11,14 +11,16 @@ function Board() {
   // console.log("board",board);
   return (
     <div
-      className='border flex flex-wrap box-content relative'
-      style={{ width: "640px", height: "640px" }}>
+      className='border flex flex-wrap box-content relative w-96 h-96 sm:w-640 sm:h-640 bg-boardBackground'
+      // style={{ width: "640px", height: "640px" }}
+      >
       {
         board.map((row, rowIndex) => {
           return (
             row.map((item, colIndex) => {
 
               return (<Square
+                key={String(rowIndex)+String(colIndex)}
                 y={rowIndex}
                 x={colIndex}
               />)            

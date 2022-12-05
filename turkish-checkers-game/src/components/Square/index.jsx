@@ -16,7 +16,7 @@ function Square({ x, y }) {
     })
 
     return (
-        <div className='border border-solid w-20 h-20 border-white relative'>
+        <div className='border border-solid w-12 h-12 sm:w-20 sm:h-20 border-white relative flex justify-center items-center'>
 
             {stonesMovementAreas[y][x] === 1 && <div className='absolute w-full h-full bg-green-500 '></div>}
 

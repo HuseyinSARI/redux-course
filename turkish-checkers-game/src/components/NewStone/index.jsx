@@ -4,13 +4,29 @@ import { useState, useEffect } from 'react'
 import Draggable, { DraggableCore } from 'react-draggable'
 import { useSelector, useDispatch } from 'react-redux'
 import { click, changeBoardLocation } from '../../redux/board/boardSlice'
+
+import { GiCrownedSkull } from 'react-icons/gi';
+import { toast } from 'react-toastify';
+
 function Stone({ x, y }) {
 
-    const { board, stonesMovementAreas, forcedMoves } = useSelector(state => state.board);
+    const { board, stonesMovementAreas, forcedMoves, turn } = useSelector(state => state.board);
     const dispatch = useDispatch();
 
     const item = board[y][x];
 
+    let stoneColor;
+    if(item === 1 || item === 3){
+        stoneColor = "white"
+    }else{
+        stoneColor = "black"
+    }
+    
+
+    const [customStyle, setCustomStyle] = useState({
+        zIndex: 10,
+        cursor: "grab"
+    })
     const [state, setState] = useState({
         activeDrags: 0,
         deltaPosition: {
@@ -60,6 +76,7 @@ function Stone({ x, y }) {
                         }
                     })
                 } else {
+                    toast.error("Forced Move Exist")
                     setState({
                         controlledPosition: {
                             x: 0,
@@ -102,11 +119,13 @@ function Stone({ x, y }) {
     const onControlledDrag = (e, position) => {
         const { x, y } = position;
         setState({ controlledPosition: { x, y } });
+        setCustomStyle({ ...customStyle, zIndex: 999 })
     };
 
     const onControlledDragStop = (e, position) => {
         onControlledDrag(e, position);
         onStop(e, position);
+        setCustomStyle({ ...customStyle, zIndex: 0 })
     };
 
     const { deltaPosition, controlledPosition } = state;
@@ -119,8 +138,14 @@ function Stone({ x, y }) {
             onDrag={onControlledDrag}
             onStop={onControlledDragStop}
         >
-            <div className={` rounded-full w-20 h-20 border absolute z-40  flex justify-center ${item === 1 || item === 3 ? "bg-white text-black" : "bg-black text-white"} `}>
-                X:{lastLocation.x}, Y:{lastLocation.y} <br /> type:{item}
+            <div
+                style={customStyle}
+                color={"pink"}
+                className={`rounded-full w-10 h-10 sm:w-14 sm:h-14 border absolute z-40  flex items-center justify-center ${item === 1 || item === 3 ? "bg-whiteStoneBackground" : "bg-blackStoneBackground"} `}
+            >
+                {/* X:{lastLocation.x}, Y:{lastLocation.y} <br /> type:{item} */}
+                {item === 3 && <GiCrownedSkull size={30} color="#42032C" />}
+                {item === 4 && <GiCrownedSkull size={30} color="#FFE15D" />}
             </div>
 
         </Draggable>
